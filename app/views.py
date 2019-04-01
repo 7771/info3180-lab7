@@ -67,6 +67,15 @@ def add_header(response):
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
+    
+@app.upload("/api/",methods=["POST"] )
+def upload():
+   # {  "message": "File Upload Successful"  
+   #"filename": "you-uploaded-file.jpg"  
+   #"description": "Some description for your image".  }
+   #if not:
+   #{  "errors": [   {},   {}  ] } 
+
 
 
 @app.errorhandler(404)
