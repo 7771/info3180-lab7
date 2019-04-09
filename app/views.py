@@ -6,8 +6,10 @@ This file creates your application.
 """
 
 from app import app
-from flask import render_template, request
-
+from flask import render_template, request, jsonify
+from  .forms import UploadForm
+from werkzeug.utils import secure_filename
+import os
 ###
 # Routing for your application.
 ###
@@ -68,13 +70,19 @@ def add_header(response):
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
     
-@app.upload("/api/",methods=["POST"] )
+@app.route('/api/upload', methods=['POST'])
 def upload():
-   # {  "message": "File Upload Successful"  
-   #"filename": "you-uploaded-file.jpg"  
-   #"description": "Some description for your image".  }
-   #if not:
-   #{  "errors": [   {},   {}  ] } 
+    form=UploadForm()
+    if request.method == "POST" and form.validate_on_submit():
+        description = form.description.data
+        file = form.photo.data
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        result = {"message": "File Upload Successful", "filename": filename, "description": description}
+        return jsonify(result=result)
+    error_collection = form_errors(form)
+    error = {"errors": error_collection}
+    return  jsonify(errors=error)
 
 
 
